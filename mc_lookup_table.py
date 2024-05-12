@@ -1,4 +1,63 @@
+#        Vertex Layout                  Edge Layout
+#
+#         6             7
+#         +-------------+               +-----6-------+   
+#       / |           / |             / |            /|   
+#     /   |         /   |          11   7         10   5
+# 2 +-----+-------+  3  |         +-----+2------+     |   
+#   |   4 +-------+-----+ 5       |     +-----4-+-----+   
+#   |   /         |   /           3   8         1   9
+#   | /           | /             | /           | /       
+# 0 +-------------+ 1             +------0------+         
 
+def edge_to_vertex(edge_idx):
+
+    vertex_mapping = [
+        [ 0, 1 ],
+        [ 1, 3 ],
+        [ 2, 3 ],
+        [ 0, 2 ],
+        [ 4, 5 ],
+        [ 5, 7 ],
+        [ 6, 7 ],
+        [ 4, 6 ],
+        [ 0, 4 ],
+        [ 1, 5 ],
+        [ 3, 7 ],
+        [ 2, 6 ]
+    ]
+
+    return vertex_mapping[edge_idx]
+
+def edge_idx_to_unit_square_mapping(edge_idx, alpha=0.5):
+    "maps the edge index to a unit square coordinate"
+
+    assert edge_idx in list(range(12)), f"{edge_idx} out of range 0-11"
+
+    if edge_idx == 0:
+        return (alpha, 0, 0)
+    elif edge_idx == 1:
+        return (1, alpha, 0)
+    elif edge_idx == 2:
+        return (alpha, 1, 0)
+    elif edge_idx == 3:
+        return (0, alpha, 0)
+    elif edge_idx == 4:
+        return (alpha, 0, -1)
+    elif edge_idx == 5:
+        return (1, alpha, -1)
+    elif edge_idx == 6:
+        return (alpha, 1, -1)
+    elif edge_idx == 7:
+        return (0, alpha, -1)
+    elif edge_idx == 8:
+        return (0, 0, -alpha)
+    elif edge_idx == 9:
+        return (1, 0, -alpha)
+    elif edge_idx == 10:
+        return (1, 1, -alpha)
+    elif edge_idx == 11:
+        return (0, 1, -alpha)
 
 def get_edges(idx):
     edges_list = [

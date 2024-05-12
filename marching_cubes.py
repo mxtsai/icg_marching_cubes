@@ -7,8 +7,7 @@ This is a simple implementation of the algorithm, and it doesn't include interpo
 import numpy as np
 
 from stl import mesh
-from mc_lookup_table import get_edges
-from myplot import plot_mesh
+from mc_lookup_table import get_edges, edge_idx_to_unit_square_mapping
 
 ############### MARCHING CUBES IMPLEMENTATION ###############
 #        Vertex Layout                  Edge Layout
@@ -48,35 +47,6 @@ from myplot import plot_mesh
 #           |/
 #           +------> x
 
-def edge_idx_to_unit_square_mapping(edge_idx):
-    "maps the edge index to a unit square coordinate"
-
-    assert edge_idx in list(range(12)), f"{edge_idx} out of range 0-11"
-
-    if edge_idx == 0:
-        return (0.5, 0, 0)
-    elif edge_idx == 1:
-        return (1, 0.5, 0)
-    elif edge_idx == 2:
-        return (0.5, 1, 0)
-    elif edge_idx == 3:
-        return (0, 0.5, 0)
-    elif edge_idx == 4:
-        return (0.5, 0, -1)
-    elif edge_idx == 5:
-        return (1, 0.5, -1)
-    elif edge_idx == 6:
-        return (0.5, 1, -1)
-    elif edge_idx == 7:
-        return (0, 0.5, -1)
-    elif edge_idx == 8:
-        return (0, 0, -0.5)
-    elif edge_idx == 9:
-        return (1, 0, -0.5)
-    elif edge_idx == 10:
-        return (1, 1, -0.5)
-    elif edge_idx == 11:
-        return (0, 1, -0.5)
     
 def apply_translation(triangle, delta_x, delta_y, delta_z):
     return [(x + delta_x, y + delta_y, z + delta_z) for x, y, z in triangle]
@@ -135,13 +105,14 @@ def marching_cubes_naive(voxel):
 
 if __name__ == "__main__":
 
+    from myplot import plot_mesh
     from load_voxels import *
 
-    example = create_sphere_voxels()
+    example = create_multiple_objects()
     cubes = marching_cubes_naive(example)
 
     # to plot the mesh (suggested for mesh under 64x64x64)
-    # plot_mesh(cubes)
+    plot_mesh(cubes)
 
     # # save to stl (suggested for mesh larger than 64x64x64)
     # cubes.save('cube.stl')
