@@ -2,7 +2,7 @@ import numpy as np
 
 def create_sphere_voxels():
         
-        voxels = np.zeros((128, 128, 128))
+        voxels = -1*np.ones((128, 128, 128))
         center = np.array([50, 50, 50])
         radius = 30
 
@@ -16,7 +16,7 @@ def create_sphere_voxels():
         return voxels
 
 def create_multiple_objects():
-    space = np.zeros((32, 32, 32))
+    space = -1*np.ones((32, 32, 32))
     
     # Create first sphere
     center1 = np.array([20, 20, 20])
@@ -48,7 +48,7 @@ def create_multiple_objects():
 
 def create_dummy_voxels():
 
-    space = np.zeros((4, 4, 4))
+    space = -1*np.ones((4, 4, 4))
 
     space[1:3, 1:3, 1:3] = 1
 

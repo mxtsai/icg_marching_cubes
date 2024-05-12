@@ -1,3 +1,9 @@
+"""
+This is an implementation of the Marching Cubes algorithm without interpolation.
+I assume points in the object as '1' and points outside the object as -1.
+This is a simple implementation of the algorithm, and it doesn't include interpolation.
+"""
+
 import numpy as np
 
 from stl import mesh
@@ -88,14 +94,14 @@ def marching_cubes_naive(voxel):
 
                 # compute the edge encoding
                 # follow the order of the vertex layout above
-                binary_0 = int(voxel[i+1][j][k])
-                binary_1 = int(voxel[i+1][j+1][k])
-                binary_2 = int(voxel[i][j][k])
-                binary_3 = int(voxel[i][j+1][k])
-                binary_4 = int(voxel[i+1][j][k+1])
-                binary_5 = int(voxel[i+1][j+1][k+1])
-                binary_6 = int(voxel[i][j][k+1])
-                binary_7 = int(voxel[i][j+1][k+1])
+                binary_0 = int(voxel[i+1][j][k] > 0)
+                binary_1 = int(voxel[i+1][j+1][k] > 0)
+                binary_2 = int(voxel[i][j][k] > 0)
+                binary_3 = int(voxel[i][j+1][k] > 0)
+                binary_4 = int(voxel[i+1][j][k+1] > 0)
+                binary_5 = int(voxel[i+1][j+1][k+1] > 0)
+                binary_6 = int(voxel[i][j][k+1] > 0)
+                binary_7 = int(voxel[i][j+1][k+1] > 0)
 
                 bit_encoding = [binary_7, binary_6, binary_5, binary_4, binary_3, binary_2, binary_1, binary_0]
                 
@@ -104,9 +110,9 @@ def marching_cubes_naive(voxel):
                 edges = get_edges(lookup_idx)
 
                 if len(edges) == 0:
-                    continue
-
-                ########### DRAW MESH ###########
+                    continue    # no triangles to build
+                
+                # build triangles from edges
 
                 # convert edge index to unit square mapping
                 unit_square_coordinates = [[edge_idx_to_unit_square_mapping(e) for e in e_list] for e_list in edges]
@@ -131,10 +137,11 @@ if __name__ == "__main__":
 
     from load_voxels import *
 
-    example = create_dummy_voxels()
+    example = create_sphere_voxels()
     cubes = marching_cubes_naive(example)
 
-    plot_mesh(cubes)
+    # to plot the mesh (suggested for mesh under 64x64x64)
+    # plot_mesh(cubes)
 
-    # # save to stl
+    # # save to stl (suggested for mesh larger than 64x64x64)
     # cubes.save('cube.stl')
