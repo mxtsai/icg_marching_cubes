@@ -1,4 +1,6 @@
+import os
 import numpy as np
+import cv2
 
 def create_sphere_voxels(space_val=-1, object_val=1):
     voxels = space_val*np.ones((128, 128, 128))
@@ -43,3 +45,31 @@ def create_dummy_voxels(space_val=-1, object_val=1):
     space[1:3, 1:3, 1:3] = object_val
 
     return space
+
+def load_ct_folder(folder_dir):
+
+    # get all the files in the folder
+    files = sorted(os.listdir(folder_dir))
+
+    height, width, depth = None, None, len(files)
+
+    # read the first file to get the dimensions
+    img = cv2.imread(os.path.join(folder_dir, files[0]), cv2.IMREAD_GRAYSCALE)
+    height, width = img.shape
+
+    # create the numpy array
+    numpy_file = np.zeros((height, width, depth))
+
+    # read all the files
+    for i, file in enumerate(files):
+        img = cv2.imread(os.path.join(folder_dir, file), cv2.IMREAD_GRAYSCALE)
+        numpy_file[:, :, i] = img
+
+    print(f"Loaded {depth} images from {folder_dir}")
+    print(f"Dimensions: {numpy_file.shape}")
+    print(f"Max value: {numpy_file.max()}")
+    print(f"Min value: {numpy_file.min()}")
+    print(f"Mean value: {numpy_file.mean()}")
+    print(f"Median value: {np.median(numpy_file)}")
+    
+    return numpy_file

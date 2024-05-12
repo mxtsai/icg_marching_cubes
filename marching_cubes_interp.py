@@ -14,7 +14,7 @@ from stl import mesh
 from mc_lookup_table import get_edges, edge_to_vertex, edge_idx_to_unit_square_mapping
 
 
-def compute_unit_vertices(edge_set, neighbors):
+def compute_unit_vertices(edge_set, neighbors, threshold):
     """computes the unit vertices (may contain multiple) given the edge set and neighbor values"""
 
     edge_set_coordinates = []
@@ -29,8 +29,14 @@ def compute_unit_vertices(edge_set, neighbors):
             start_val = neighbors[start_vertex_idx]
             end_val = neighbors[end_vertex_idx]
 
+            # subtract by the threshold (to enable crossing)
+            start_val -= threshold
+            end_val -= threshold
+
             # compute the interpolated point
             alpha = start_val/(start_val - end_val)
+            # print(alpha)
+            # alpha = 0.5
 
             # compute the (x, y, z) coordinates based on the edge and the alpha value
             xyz_coordinate = edge_idx_to_unit_square_mapping(edge, alpha)
@@ -74,7 +80,7 @@ def marching_cubes_iterpolation(voxel, threshold=0.0):
                     continue    # no triangles to build
 
                 # compute unit vertices
-                unit_square_coordinates = compute_unit_vertices(edges, neighbors)
+                unit_square_coordinates = compute_unit_vertices(edges, neighbors, threshold)
 
                 # apply translation
                 delta_x = j
@@ -101,12 +107,17 @@ if __name__ == "__main__":
 
     from myplot import plot_mesh
     from load_voxels import *
+    import time
 
     example = create_sphere_voxels(space_val=-1, object_val=5)
-    cubes = marching_cubes_iterpolation(example)
+
+    start_time = time.time()
+    cubes = marching_cubes_iterpolation(example, threshold=120)
+    print(f"Marching Cube took: {time.time() - start_time} seconds")
 
     # to plot the mesh (suggested for mesh under 64x64x64)
     # plot_mesh(cubes)
 
-    # # save to stl (suggested for mesh larger than 64x64x64)
+    # save to stl (suggested for mesh larger than 64x64x64)
     cubes.save('cube.stl')
+

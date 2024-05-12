@@ -108,11 +108,12 @@ if __name__ == "__main__":
     from myplot import plot_mesh
     from load_voxels import *
 
-    example = create_multiple_objects()
-    cubes = marching_cubes_naive(example)
+    # example = create_multiple_objects()
+    example = load_ct_folder("./lower")
+    # cubes = marching_cubes_naive(example)
 
-    # to plot the mesh (suggested for mesh under 64x64x64)
-    plot_mesh(cubes)
+    # # to plot the mesh (suggested for mesh under 64x64x64)
+    # # plot_mesh(cubes)
 
-    # # save to stl (suggested for mesh larger than 64x64x64)
+    # # # save to stl (suggested for mesh larger than 64x64x64)
     # cubes.save('cube.stl')
