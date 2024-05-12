@@ -48,8 +48,8 @@ def create_multiple_objects():
 
 def create_dummy_voxels():
 
-    # a dummpy voxel for now
-    voxels = np.zeros((4, 4, 4))
-    voxels[1:3, 1:3, 1:3] = 1
+    space = np.zeros((4, 4, 4))
 
-    return voxels
+    space[1:3, 1:3, 1:3] = 1
+
+    return space

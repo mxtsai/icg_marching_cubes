@@ -18,6 +18,29 @@ from myplot import plot_mesh
 # 0 +-------------+ 1             +------0------+         
 
 
+# Coordinate System:
+#
+#              (0,1,-1)               (1,1,-1)
+#                +-------------------+
+#               /|                  /|
+#              / |                 / |   
+#             /  |                /  |
+#            /   |               /   |     
+#    (0,1,0)+-------------------+(1,1,0)
+#           |    | (0,0,-1)     |    |
+#           |    +--------------|--- + (1,0,-1)
+#           |   /               |   /
+#           |  /                |  /
+#           | /                 | /
+#           |/                  |/
+#    (0,0,0)+-------------------+(1,0,0)
+#
+#
+#           z
+#           ^  
+#           | /y
+#           |/
+#           +------> x
 
 def edge_idx_to_unit_square_mapping(edge_idx):
     "maps the edge index to a unit square coordinate"
@@ -33,27 +56,30 @@ def edge_idx_to_unit_square_mapping(edge_idx):
     elif edge_idx == 3:
         return (0, 0.5, 0)
     elif edge_idx == 4:
-        return (0.5, 0, 1)
+        return (0.5, 0, -1)
     elif edge_idx == 5:
-        return (1, 0.5, 1)
+        return (1, 0.5, -1)
     elif edge_idx == 6:
-        return (0.5, 1, 1)
+        return (0.5, 1, -1)
     elif edge_idx == 7:
-        return (0, 0.5, 1)
+        return (0, 0.5, -1)
     elif edge_idx == 8:
-        return (0, 0, 0.5)
+        return (0, 0, -0.5)
     elif edge_idx == 9:
-        return (1, 0, 0.5)
+        return (1, 0, -0.5)
     elif edge_idx == 10:
-        return (1, 1, 0.5)
+        return (1, 1, -0.5)
     elif edge_idx == 11:
-        return (0, 1, 0.5)
+        return (0, 1, -0.5)
+    
+def apply_translation(triangle, delta_x, delta_y, delta_z):
+    return [(x + delta_x, y + delta_y, z + delta_z) for x, y, z in triangle]
     
 def marching_cubes_naive(voxel):
 
     output_dim = np.array(voxel.shape) - 1      # compute the output dimension
 
-    mesh_list = []
+    vector_list = []
 
     # assume i, j, k
     for i in range(output_dim[0]):
@@ -85,34 +111,18 @@ def marching_cubes_naive(voxel):
                 # convert edge index to unit square mapping
                 unit_square_coordinates = [[edge_idx_to_unit_square_mapping(e) for e in e_list] for e_list in edges]
 
-                # unit mesh
-                unit_mesh = mesh.Mesh(np.zeros(len(edges), dtype=mesh.Mesh.dtype))
-                for triangle_i, triangle in enumerate(unit_square_coordinates):
-                    unit_mesh.vectors[triangle_i][:] = np.array(triangle)
-                
-                # translate unit mesh to its position
-                unit_mesh.x += j
-                unit_mesh.y += -i
-                unit_mesh.z += k
+                # apply translation
+                delta_x = j
+                delta_y = output_dim[0] - i
+                delta_z = -k
+                translated_coordinates = [apply_translation(triangle, delta_x, delta_y, delta_z) for triangle in unit_square_coordinates]
 
-                # add to mesh_list
-                mesh_list.append(unit_mesh)
+                # add to vector list
+                vector_list.extend(translated_coordinates)
 
-                # print(i, j ,k)
-                # print(lookup_idx)
-                # print(edges)
-                # print(unit_square_coordinates)
-                # print(unit_mesh.data)
-                # print()
-
-    # assemble final mesh
-    n_vectors = sum([len(m) for m in mesh_list])
-    final_mesh = mesh.Mesh(np.zeros(n_vectors, dtype=mesh.Mesh.dtype))
-    idx = 0
-    for m in mesh_list:
-        mesh_data = m.vectors
-        final_mesh.vectors[idx:idx+len(mesh_data)][:] = mesh_data
-        idx += len(mesh_data)
+    final_mesh = mesh.Mesh(np.zeros(len(vector_list), dtype=mesh.Mesh.dtype))
+    for triangle_i, triangle in enumerate(vector_list):
+        final_mesh.vectors[triangle_i][:] = np.array(triangle)
 
     return final_mesh
 
@@ -126,5 +136,5 @@ if __name__ == "__main__":
 
     plot_mesh(cubes)
 
-    # save to stl
+    # # save to stl
     # cubes.save('cube.stl')
