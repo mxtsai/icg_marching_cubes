@@ -3,9 +3,9 @@ import numpy as np
 import cv2
 
 def create_sphere_voxels(space_val=-1, object_val=1):
-    voxels = space_val*np.ones((128, 128, 128))
-    center = np.array([50, 50, 50])
-    radius = 30
+    voxels = space_val*np.ones((40, 40, 40))
+    center = np.array([20, 20, 20])
+    radius = 5
 
     for i in range(voxels.shape[0]):
         for j in range(voxels.shape[1]):

@@ -35,8 +35,6 @@ def compute_unit_vertices(edge_set, neighbors, threshold):
 
             # compute the interpolated point
             alpha = start_val/(start_val - end_val)
-            # print(alpha)
-            # alpha = 0.5
 
             # compute the (x, y, z) coordinates based on the edge and the alpha value
             xyz_coordinate = edge_idx_to_unit_square_mapping(edge, alpha)
@@ -84,7 +82,7 @@ def marching_cubes_iterpolation(voxel, threshold=0.0):
 
                 # apply translation
                 delta_x = j
-                delta_y = output_dim[0] - i
+                delta_y = output_dim[0] - i - 1
                 delta_z = -k
                 translated_coordinates = [apply_translation(triangle, delta_x, delta_y, delta_z) for triangle in unit_square_coordinates]
 
@@ -95,11 +93,11 @@ def marching_cubes_iterpolation(voxel, threshold=0.0):
     for triangle_i, triangle in enumerate(vector_list):
         final_mesh.vectors[triangle_i][:] = np.array(triangle)
 
-    # let's translate the mesh to the origin
-    center_of_mass = final_mesh.get_mass_properties()[1]
-    final_mesh.x -= center_of_mass[0]
-    final_mesh.y -= center_of_mass[1]
-    final_mesh.z -= center_of_mass[2]
+    # # let's translate the mesh to the origin
+    # center_of_mass = final_mesh.get_mass_properties()[1]
+    # final_mesh.x -= center_of_mass[0]
+    # final_mesh.y -= center_of_mass[1]
+    # final_mesh.z -= center_of_mass[2]
 
     return final_mesh
 
@@ -109,15 +107,18 @@ if __name__ == "__main__":
     from load_voxels import *
     import time
 
-    example = create_sphere_voxels(space_val=-1, object_val=5)
+    # example = create_sphere_voxels(space_val=-1, object_val=5)
+    # example = load_ct_folder('./data/lower')
+    example = np.ones((3, 3, 3))*-1
+    example[1, 1, 1] = 1
 
     start_time = time.time()
-    cubes = marching_cubes_iterpolation(example, threshold=120)
+    cubes = marching_cubes_iterpolation(example, threshold=0)
     print(f"Marching Cube took: {time.time() - start_time} seconds")
 
     # to plot the mesh (suggested for mesh under 64x64x64)
-    # plot_mesh(cubes)
+    plot_mesh(cubes)
 
     # save to stl (suggested for mesh larger than 64x64x64)
-    cubes.save('cube.stl')
+    # cubes.save('cube.stl')
 
