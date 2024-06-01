@@ -7,7 +7,7 @@ import numpy as np
 from stl import mesh
 from tetrahedra_lookup_table import edge_to_vertex, \
     edge_idx_to_unit_tetrahedra_mapping, binary_to_base10, get_edge
-
+import argparse
 def inverse_linear_interpolation(threshold, v1, v2):
     return (threshold - v1)/(v2 - v1)
 
@@ -118,7 +118,13 @@ if __name__ == "__main__":
     from myplot import plot_mesh
     from load_voxels import *
     import time
-
+    parser = argparse.ArgumentParser(description="Marching Cubes")
+    parser.add_argument("--input", type=str, help="Path to input voxel data", default="./data/lower")
+    parser.add_argument("--output", type=str, help="Path to output STL file", default="tetrahedra.stl")
+    parser.add_argument("--threshold", type=float, help="Threshold for binarization", default=0)
+    parser.add_argument("--gaps", type=int, help="Gaps between images", default=1)
+    args = parser.parse_args()
+    
     # create a simple 2x2x2 voxel grid
     # example = np.ones((2, 2, 2))*-1
     # example[0, 0 ,0] = 1    # ok
@@ -136,12 +142,14 @@ if __name__ == "__main__":
     # example = np.ones((3, 3, 3))*-1
     # example[1, 1, 1] = 1
 
-    example = create_multiple_objects()
+    # example = create_multiple_objects()
+    # example = load_ct_folder(args.input)
+    example = load_ct_folder_gaps(args.input, gaps=args.gaps)
     
-    tetra_mesh = marching_tetrahedra(example, threshold=0)
+    tetra_mesh = marching_tetrahedra(example, threshold=args.threshold)
 
     # to plot the mesh (suggested for mesh under 64x64x64)
     # plot_mesh(tetra_mesh)
 
-    tetra_mesh.save("tetrahedra.stl")
+    tetra_mesh.save(args.output)
 

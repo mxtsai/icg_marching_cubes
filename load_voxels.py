@@ -73,3 +73,36 @@ def load_ct_folder(folder_dir):
     print(f"Median value: {np.median(numpy_file)}")
     
     return numpy_file
+
+def load_ct_folder_gaps(folder_dir, gaps=1):
+    # get all the files in the folder
+    files = sorted(os.listdir(folder_dir))
+
+    height, width, depth = None, None, len(files) + (len(files) - 1) * gaps
+
+    # read the first file to get the dimensions
+    img = cv2.imread(os.path.join(folder_dir, files[0]), cv2.IMREAD_GRAYSCALE)
+    height, width = img.shape
+
+    # create the numpy array
+    numpy_file = np.zeros((height, width, depth))
+
+    # read all the files
+    for i, file in enumerate(files):
+        img = cv2.imread(os.path.join(folder_dir, file), cv2.IMREAD_GRAYSCALE)
+        numpy_file[:, :, gaps*i] = img
+    
+    # interpolate the gaps
+    if gaps > 1:
+        for i in range(1, len(files)):
+            for gap in range(1, gaps):
+                numpy_file[:, :, gaps*i + gap] = (numpy_file[:, :, gaps*i] * (gaps - gap) + numpy_file[:, :, gaps*(i+1)] * gap) / gaps
+                
+    print(f"Loaded {len(files)} images from {folder_dir}, filling gaps with {gaps} images")
+    print(f"Dimensions: {numpy_file.shape}")
+    print(f"Max value: {numpy_file.max()}")
+    print(f"Min value: {numpy_file.min()}")
+    print(f"Mean value: {numpy_file.mean()}")
+    print(f"Median value: {np.median(numpy_file)}")
+
+    return numpy_file

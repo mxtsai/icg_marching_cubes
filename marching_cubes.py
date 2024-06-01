@@ -8,7 +8,7 @@ import numpy as np
 
 from stl import mesh
 from mc_lookup_table import get_edges, edge_idx_to_unit_square_mapping
-
+import argparse
 ############### MARCHING CUBES IMPLEMENTATION ###############
 #        Vertex Layout                  Edge Layout
 #
@@ -51,7 +51,7 @@ from mc_lookup_table import get_edges, edge_idx_to_unit_square_mapping
 def apply_translation(triangle, delta_x, delta_y, delta_z):
     return [(x + delta_x, y + delta_y, z + delta_z) for x, y, z in triangle]
     
-def marching_cubes_naive(voxel):
+def marching_cubes_naive(voxel, threshold=100):
 
     output_dim = np.array(voxel.shape) - 1      # compute the output dimension
 
@@ -64,17 +64,16 @@ def marching_cubes_naive(voxel):
 
                 # compute the edge encoding
                 # follow the order of the vertex layout above
-                binary_0 = int(voxel[i+1][j][k] > 0)
-                binary_1 = int(voxel[i+1][j+1][k] > 0)
-                binary_2 = int(voxel[i][j][k] > 0)
-                binary_3 = int(voxel[i][j+1][k] > 0)
-                binary_4 = int(voxel[i+1][j][k+1] > 0)
-                binary_5 = int(voxel[i+1][j+1][k+1] > 0)
-                binary_6 = int(voxel[i][j][k+1] > 0)
-                binary_7 = int(voxel[i][j+1][k+1] > 0)
+                binary_0 = int(voxel[i+1][j][k] > threshold)
+                binary_1 = int(voxel[i+1][j+1][k] >  threshold)
+                binary_2 = int(voxel[i][j][k] >  threshold)
+                binary_3 = int(voxel[i][j+1][k] >  threshold)
+                binary_4 = int(voxel[i+1][j][k+1] >  threshold)
+                binary_5 = int(voxel[i+1][j+1][k+1] >  threshold)
+                binary_6 = int(voxel[i][j][k+1] >  threshold)
+                binary_7 = int(voxel[i][j+1][k+1] >  threshold)
 
                 bit_encoding = [binary_7, binary_6, binary_5, binary_4, binary_3, binary_2, binary_1, binary_0]
-                
                 # convert to number
                 lookup_idx = np.packbits(bit_encoding)[0]
                 edges = get_edges(lookup_idx)
@@ -107,9 +106,18 @@ if __name__ == "__main__":
 
     from myplot import plot_mesh
     from load_voxels import *
+    parser = argparse.ArgumentParser(description="Marching Cubes")
+    parser.add_argument("--input", type=str, help="Path to input voxel data", default="./data/lower")
+    parser.add_argument("--output", type=str, help="Path to output STL file", default="output.stl")
+    parser.add_argument("--threshold", type=float, help="Threshold for binarization", default=0)
+    parser.add_argument("--gaps", type=int, help="Gaps between images", default=1)
+    args = parser.parse_args()
 
+    example = load_ct_folder_gaps(args.input, args.gaps)
+    cubes = marching_cubes_naive(example, args.threshold)
+    cubes.save(args.output)
     # example = create_multiple_objects()
-    example = load_ct_folder("./lower")
+    # example = load_ct_folder("./lower")
     # cubes = marching_cubes_naive(example)
 
     # # to plot the mesh (suggested for mesh under 64x64x64)
