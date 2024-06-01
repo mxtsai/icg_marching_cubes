@@ -119,7 +119,7 @@ if __name__ == "__main__":
     from load_voxels import *
     import time
     parser = argparse.ArgumentParser(description="Marching Cubes")
-    parser.add_argument("--input", type=str, help="Path to input voxel data", default="./data/lower")
+    parser.add_argument("--input", type=str, help="Path to input images", default="./data/lower")
     parser.add_argument("--output", type=str, help="Path to output STL file", default="tetrahedra.stl")
     parser.add_argument("--threshold", type=float, help="Threshold for binarization", default=0)
     parser.add_argument("--gaps", type=int, help="Gaps between images", default=1)
