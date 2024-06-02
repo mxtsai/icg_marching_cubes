@@ -25,7 +25,7 @@ Flags:
 * `--input` Path to input image data
 * `--output` Path to output STL file
 * `--threshold` Threshold for vertex binarization
-* `--gaps` Gaps between 2D images
+* `--gaps` Gaps between 2D images, please enter number that is >= 1
 
 
 ### About
