@@ -19,7 +19,7 @@ $ git clone https://github.com/mxtsai/icg_marching_cubes.git
 $ cd icg_marching_cubes
 
 # run the code
-$ python --input "./data/lower" --output "output.stl" --threshold 100 --gaps 5
+$ python marching_cubes.py --input "./data/lower" --output "output.stl" --threshold 100 --gaps 5
 ```
 Flags:
 * `--input` Path to input image data
